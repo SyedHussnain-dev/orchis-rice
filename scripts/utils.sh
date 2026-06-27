@@ -20,6 +20,10 @@ RESET='\033[0m'
 ORCHIS_RICE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TEMP_DIR="${ORCHIS_RICE_DIR}/.orchis-tmp"
 
+# ── Step Tracking ───────────────────────────────────────────────────────────
+CURRENT_STEP=0
+TOTAL_STEPS=8
+
 # ── Logging ─────────────────────────────────────────────────────────────────
 info() {
     printf "${BLUE}  ▸${RESET} %s\n" "$*"
@@ -38,7 +42,12 @@ error() {
 }
 
 header() {
-    printf "\n${BOLD}${MAGENTA}  %s${RESET}\n" "$*"
+    if [[ $CURRENT_STEP -lt $TOTAL_STEPS ]]; then
+        CURRENT_STEP=$((CURRENT_STEP + 1))
+        printf "\n${BOLD}${MAGENTA}  [%d/%d] %s${RESET}\n" "$CURRENT_STEP" "$TOTAL_STEPS" "$*"
+    else
+        printf "\n${BOLD}${MAGENTA}  %s${RESET}\n" "$*"
+    fi
 }
 
 # ── Spinner ─────────────────────────────────────────────────────────────────

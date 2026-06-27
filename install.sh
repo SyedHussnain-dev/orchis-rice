@@ -26,24 +26,29 @@ source "${SCRIPT_DIR}/scripts/extensions.sh"
 source "${SCRIPT_DIR}/scripts/gnome.sh"
 # shellcheck source=scripts/wallpaper.sh
 source "${SCRIPT_DIR}/scripts/wallpaper.sh"
+# shellcheck source=scripts/backup.sh
+source "${SCRIPT_DIR}/scripts/backup.sh"
 
 # Global variables for summary
 START_TIME=$(date +%s)
 SELECTED_WALLPAPER="None"
 
-# ── Main ────────────────────────────────────────────────────────────────────
-main() {
-    clear
-    printf "\n"
-    printf "${BOLD}${MAGENTA}  ========================================${RESET}\n"
-    printf "\n"
-    printf "${BOLD}${MAGENTA}  🌸 ORCHIS RICE${RESET}\n"
-    printf "\n"
-    printf "${CYAN}  Ubuntu 24.04 Desktop Installer${RESET}\n"
-    printf "\n"
-    printf "${BOLD}${MAGENTA}  ========================================${RESET}\n"
-    printf "\n"
+# ── Logo ────────────────────────────────────────────────────────────────────
+print_logo() {
+    printf "${BOLD}${MAGENTA}"
+    cat << "EOF"
+  ██████╗ ██████╗  ██████╗██╗  ██╗██╗███████╗
+  ██╔══██╗██╔══██╗██╔════╝██║  ██║██║██╔════╝
+  ██████╔╝██████╔╝██║     ███████║██║███████╗
+  ██╔═══╝ ██╔══██╗██║     ██╔══██║██║╚════██║
+  ██║     ██║  ██║╚██████╗██║  ██║██║███████║
+  ╚═╝     ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝╚══════╝
+EOF
+    printf "${RESET}\n"
+}
 
+# ── Installation Flow ───────────────────────────────────────────────────────
+run_installation() {
     # Pre-flight checks
     info "Checking system requirements..."
     check_ubuntu || {
@@ -55,6 +60,10 @@ main() {
 
     # Ensure cleanup on exit
     trap cleanup_temp EXIT
+
+    # Reset step counter
+    CURRENT_STEP=0
+    TOTAL_STEPS=8
 
     # Run installation steps
     install_dependencies
@@ -93,6 +102,63 @@ main() {
     printf "\n"
     printf "${BOLD}${GREEN}  ========================================${RESET}\n"
     printf "\n"
+    exit 0
 }
 
-main "$@"
+# ── Main Menu ───────────────────────────────────────────────────────────────
+main() {
+    clear || true
+    printf "\n"
+    printf "${BOLD}${MAGENTA}  ======================================================${RESET}\n"
+    print_logo
+    printf "${CYAN}             Ubuntu 24.04 Desktop Installer${RESET}\n"
+    printf "${BOLD}${MAGENTA}  ======================================================${RESET}\n"
+    printf "\n"
+    printf "  ${BOLD}1.${RESET} Install\n"
+    printf "  ${BOLD}2.${RESET} Update (Fetch latest updates and reinstall)\n"
+    printf "  ${BOLD}3.${RESET} Uninstall\n"
+    printf "  ${BOLD}4.${RESET} Backup Settings\n"
+    printf "  ${BOLD}5.${RESET} Exit\n"
+    printf "\n"
+    printf "${BOLD}${MAGENTA}  ======================================================${RESET}\n"
+    printf "\n"
+
+    while true; do
+        printf "  ${BOLD}Select an option [1-5]:${RESET} "
+        read -r choice
+
+        case "$choice" in
+            1|2)
+                if [[ "$choice" == "2" ]]; then
+                    info "Pulling latest updates..."
+                    git pull || warn "Could not pull latest updates (maybe not a git repository)"
+                fi
+                run_installation
+                break
+                ;;
+            3)
+                if [[ -x "${ORCHIS_RICE_DIR}/uninstall.sh" ]]; then
+                    "${ORCHIS_RICE_DIR}/uninstall.sh"
+                else
+                    bash "${ORCHIS_RICE_DIR}/uninstall.sh"
+                fi
+                break
+                ;;
+            4)
+                backup_settings
+                ;;
+            5)
+                info "Exiting."
+                exit 0
+                ;;
+            *)
+                warn "Invalid selection."
+                ;;
+        esac
+    done
+}
+
+# Execute main menu if run directly
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi

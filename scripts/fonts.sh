@@ -3,9 +3,8 @@
 
 set -Eeuo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=utils.sh
-source "${SCRIPT_DIR}/utils.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/utils.sh"
 
 INTER_URL="https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip"
 JETBRAINS_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/JetBrainsMono.zip"

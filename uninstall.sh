@@ -25,7 +25,7 @@ source "${SCRIPT_DIR}/scripts/gnome.sh"
 
 # ── Main ────────────────────────────────────────────────────────────────────
 main() {
-    clear
+    clear || true
     printf "\n"
     printf "${BOLD}${RED}  ========================================${RESET}\n"
     printf "\n"

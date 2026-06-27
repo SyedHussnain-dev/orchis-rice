@@ -3,9 +3,8 @@
 
 set -Eeuo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=utils.sh
-source "${SCRIPT_DIR}/utils.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/utils.sh"
 
 ORCHIS_REPO="https://github.com/vinceliuice/Orchis-theme.git"
 
