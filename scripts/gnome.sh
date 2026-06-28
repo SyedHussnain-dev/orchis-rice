@@ -178,20 +178,42 @@ reset_gnome_settings() {
     safe_gsettings reset org.gnome.desktop.interface document-font-name
     safe_gsettings reset org.gnome.desktop.interface monospace-font-name
     safe_gsettings reset org.gnome.desktop.wm.preferences titlebar-font
+    safe_gsettings reset org.gnome.desktop.interface font-antialiasing
+    safe_gsettings reset org.gnome.desktop.interface font-hinting
 
     # Reset window management
     safe_gsettings reset org.gnome.desktop.wm.preferences button-layout
     safe_gsettings reset org.gnome.mutter center-new-windows
+    safe_gsettings reset org.gnome.mutter edge-tiling
     safe_gsettings reset org.gnome.desktop.wm.preferences focus-new-windows
+    safe_gsettings reset org.gnome.desktop.wm.preferences num-workspaces
 
     # Reset clock
     safe_gsettings reset org.gnome.desktop.interface clock-show-weekday
     safe_gsettings reset org.gnome.desktop.interface clock-show-date
+    safe_gsettings reset org.gnome.desktop.interface clock-show-seconds
     safe_gsettings reset org.gnome.desktop.interface clock-format
+
+    # Reset workspaces and animations
+    safe_gsettings reset org.gnome.mutter dynamic-workspaces
+    safe_gsettings reset org.gnome.mutter workspaces-only-on-primary
+    safe_gsettings reset org.gnome.desktop.interface enable-animations
 
     # Reset touchpad
     safe_gsettings reset org.gnome.desktop.peripherals.touchpad tap-to-click
     safe_gsettings reset org.gnome.desktop.peripherals.touchpad natural-scroll
+
+    # Reset night light
+    safe_gsettings reset org.gnome.settings-daemon.plugins.color night-light-enabled
+    safe_gsettings reset org.gnome.settings-daemon.plugins.color night-light-temperature
+
+    # Reset extension schemas
+    info "Resetting extension configurations..."
+    safe_gsettings reset-recursively org.gnome.shell.extensions.blur-my-shell 2>/dev/null || true
+    safe_gsettings reset-recursively org.gnome.shell.extensions.dash-to-dock 2>/dev/null || true
+    safe_gsettings reset-recursively org.gnome.shell.extensions.arcmenu 2>/dev/null || true
+    safe_gsettings reset-recursively org.gnome.shell.extensions.just-perfection 2>/dev/null || true
+    safe_gsettings reset-recursively org.gnome.shell.extensions.vitals 2>/dev/null || true
 
     success "GNOME settings reset to defaults"
 }

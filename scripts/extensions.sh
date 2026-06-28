@@ -202,10 +202,10 @@ install_extensions() {
 }
 
 remove_extensions() {
-    info "Disabling installed extensions..."
+    info "Uninstalling extensions..."
     for uuid in "${GEXT_EXTENSIONS[@]}"; do
-        gnome-extensions disable "$uuid" 2>/dev/null || true
+        gnome-extensions uninstall "$uuid" 2>/dev/null || true
     done
     gnome-extensions disable "appindicatorsupport@rgcjonas.gmail.com" 2>/dev/null || true
-    success "Extensions disabled"
+    success "Extensions uninstalled"
 }
