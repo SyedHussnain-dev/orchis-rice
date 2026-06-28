@@ -172,6 +172,15 @@ install_extensions() {
         INSTALL_STATUS[extensions]="installed"
     fi
 
+    # Compile schemas so gsettings can configure them immediately
+    info "Compiling extension schemas..."
+    local schema_dir="${HOME}/.local/share/glib-2.0/schemas"
+    if [[ -d "${HOME}/.local/share/gnome-shell/extensions" ]]; then
+        mkdir -p "$schema_dir"
+        find "${HOME}/.local/share/gnome-shell/extensions" -name '*.xml' -exec cp {} "$schema_dir/" \; 2>/dev/null || true
+        glib-compile-schemas "$schema_dir" 2>/dev/null || true
+    fi
+
     success "Extensions setup complete (${installed} installed, ${failed} need manual installation)"
 }
 
