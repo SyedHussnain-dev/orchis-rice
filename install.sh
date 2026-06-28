@@ -150,6 +150,67 @@ run_installation() {
     exit 0
 }
 
+# ── Configure Theme ─────────────────────────────────────────────────────────
+configure_theme() {
+    clear || true
+    printf "\n"
+    printf "${BOLD}${MAGENTA}  ======================================================${RESET}\n"
+    printf "${CYAN}             Configure Orchis Theme Options${RESET}\n"
+    printf "${BOLD}${MAGENTA}  ======================================================${RESET}\n"
+    printf "\n"
+    
+    # Ensure config is loaded first to show current defaults
+    load_config >/dev/null 2>&1
+
+    printf "  ${BOLD}Theme Variant (default, purple, pink, red, orange, yellow, green, teal, grey, all)${RESET}\n"
+    printf "  Current [${ORCHIS_THEME_VARIANT:-default}]: "
+    read -r t_var
+    [[ -n "$t_var" ]] && ORCHIS_THEME_VARIANT="$t_var"
+    
+    printf "\n  ${BOLD}Color Variant (standard, light, dark)${RESET}\n"
+    printf "  Current [${ORCHIS_COLOR_VARIANT:-dark}]: "
+    read -r c_var
+    [[ -n "$c_var" ]] && ORCHIS_COLOR_VARIANT="$c_var"
+
+    printf "\n  ${BOLD}Size Variant (standard, compact)${RESET}\n"
+    printf "  Current [${ORCHIS_SIZE_VARIANT:-}]: "
+    read -r s_var
+    [[ -n "$s_var" ]] && ORCHIS_SIZE_VARIANT="$s_var"
+
+    printf "\n  ${BOLD}Tweaks (macos, solid, compact, black, primary, submenu, dock)${RESET}\n"
+    printf "  Current [${ORCHIS_TWEAKS:-macos}]: "
+    read -r tw_var
+    [[ -n "$tw_var" ]] && ORCHIS_TWEAKS="$tw_var"
+
+    printf "\n  ${BOLD}Round Corners (e.g. 5px, 8px, 12px)${RESET}\n"
+    printf "  Current [${ORCHIS_ROUND:-}]: "
+    read -r r_var
+    [[ -n "$r_var" ]] && ORCHIS_ROUND="$r_var"
+
+    printf "\n  ${BOLD}Link to libadwaita apps (true/false)${RESET}\n"
+    printf "  Current [${ORCHIS_LIBADWAITA:-false}]: "
+    read -r l_var
+    [[ -n "$l_var" ]] && ORCHIS_LIBADWAITA="$l_var"
+    
+    # Save back to config/default.conf using sed
+    if [[ -f "$CONFIG_FILE" ]]; then
+        sed -i "s/^ORCHIS_THEME_VARIANT=.*/ORCHIS_THEME_VARIANT=\"$ORCHIS_THEME_VARIANT\"/" "$CONFIG_FILE"
+        sed -i "s/^ORCHIS_COLOR_VARIANT=.*/ORCHIS_COLOR_VARIANT=\"$ORCHIS_COLOR_VARIANT\"/" "$CONFIG_FILE"
+        sed -i "s/^ORCHIS_SIZE_VARIANT=.*/ORCHIS_SIZE_VARIANT=\"$ORCHIS_SIZE_VARIANT\"/" "$CONFIG_FILE"
+        sed -i "s/^ORCHIS_TWEAKS=.*/ORCHIS_TWEAKS=\"$ORCHIS_TWEAKS\"/" "$CONFIG_FILE"
+        sed -i "s/^ORCHIS_ROUND=.*/ORCHIS_ROUND=\"$ORCHIS_ROUND\"/" "$CONFIG_FILE"
+        sed -i "s/^ORCHIS_LIBADWAITA=.*/ORCHIS_LIBADWAITA=\"$ORCHIS_LIBADWAITA\"/" "$CONFIG_FILE"
+        
+        printf "\n  ${GREEN}✓ Configuration saved to ${CONFIG_FILE}${RESET}\n"
+    else
+        printf "\n  ${RED}✗ Config file not found at ${CONFIG_FILE}${RESET}\n"
+    fi
+
+    printf "\n  Press Enter to return to main menu..."
+    read -r
+}
+
+
 # ── Main Menu ───────────────────────────────────────────────────────────────
 main() {
     clear || true
@@ -163,13 +224,14 @@ main() {
     printf "  ${BOLD}2.${RESET} Update (Fetch latest updates and reinstall)\n"
     printf "  ${BOLD}3.${RESET} Uninstall\n"
     printf "  ${BOLD}4.${RESET} Backup Settings\n"
-    printf "  ${BOLD}5.${RESET} Exit\n"
+    printf "  ${BOLD}5.${RESET} Configure Orchis Theme\n"
+    printf "  ${BOLD}6.${RESET} Exit\n"
     printf "\n"
     printf "${BOLD}${MAGENTA}  ======================================================${RESET}\n"
     printf "\n"
 
     while true; do
-        printf "  ${BOLD}Select an option [1-5]:${RESET} "
+        printf "  ${BOLD}Select an option [1-6]:${RESET} "
         read -r choice
 
         case "$choice" in
@@ -193,6 +255,9 @@ main() {
                 backup_settings
                 ;;
             5)
+                configure_theme
+                ;;
+            6)
                 info "Exiting."
                 exit 0
                 ;;

@@ -48,6 +48,17 @@ COLOR_SCHEME="${COLOR_SCHEME:-prefer-dark}"
 CLOCK_FORMAT="${CLOCK_FORMAT:-24h}"
 BUTTON_LAYOUT="${BUTTON_LAYOUT:-close,minimize,maximize:}"
 
+# Orchis Theme Options Defaults
+ORCHIS_THEME_VARIANT="${ORCHIS_THEME_VARIANT:-default}"
+ORCHIS_COLOR_VARIANT="${ORCHIS_COLOR_VARIANT:-dark}"
+ORCHIS_SIZE_VARIANT="${ORCHIS_SIZE_VARIANT:-}"
+ORCHIS_ICON_VARIANT="${ORCHIS_ICON_VARIANT:-}"
+ORCHIS_TWEAKS="${ORCHIS_TWEAKS:-macos}"
+ORCHIS_ROUND="${ORCHIS_ROUND:-}"
+ORCHIS_LIBADWAITA="${ORCHIS_LIBADWAITA:-false}"
+ORCHIS_FIXED="${ORCHIS_FIXED:-false}"
+ORCHIS_SHELL_VERSION="${ORCHIS_SHELL_VERSION:-}"
+
 # ── Config Loading ──────────────────────────────────────────────────────────
 load_config() {
     if [[ -f "$CONFIG_FILE" ]]; then

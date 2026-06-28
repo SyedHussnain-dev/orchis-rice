@@ -36,10 +36,40 @@ install_theme() {
 
     info "Installing Orchis Dark..."
     cd "$clone_dir"
-    # -t default: standard accent color
-    # -c dark: dark variant
-    # --tweaks macos: macOS-style window controls (matches button-layout config)
-    bash ./install.sh -t default -c dark --tweaks macos 2>/dev/null || {
+    
+    local -a install_args=()
+    
+    if [[ -n "${ORCHIS_THEME_VARIANT:-}" ]]; then
+        install_args+=("-t" "$ORCHIS_THEME_VARIANT")
+    fi
+    if [[ -n "${ORCHIS_COLOR_VARIANT:-}" ]]; then
+        install_args+=("-c" "$ORCHIS_COLOR_VARIANT")
+    fi
+    if [[ -n "${ORCHIS_SIZE_VARIANT:-}" ]]; then
+        install_args+=("-s" "$ORCHIS_SIZE_VARIANT")
+    fi
+    if [[ -n "${ORCHIS_ICON_VARIANT:-}" ]]; then
+        install_args+=("-i" "$ORCHIS_ICON_VARIANT")
+    fi
+    if [[ -n "${ORCHIS_TWEAKS:-}" ]]; then
+        for tweak in $ORCHIS_TWEAKS; do
+            install_args+=("--tweaks" "$tweak")
+        done
+    fi
+    if [[ -n "${ORCHIS_ROUND:-}" ]]; then
+        install_args+=("--round" "$ORCHIS_ROUND")
+    fi
+    if [[ "${ORCHIS_LIBADWAITA:-false}" == "true" ]]; then
+        install_args+=("-l")
+    fi
+    if [[ "${ORCHIS_FIXED:-false}" == "true" ]]; then
+        install_args+=("-f")
+    fi
+    if [[ -n "${ORCHIS_SHELL_VERSION:-}" ]]; then
+        install_args+=("--shell" "$ORCHIS_SHELL_VERSION")
+    fi
+
+    bash ./install.sh "${install_args[@]}" 2>/dev/null || {
         error "Orchis theme installation script failed"
         error "Try installing manually: https://github.com/vinceliuice/Orchis-theme"
         cd "$ORCHIS_RICE_DIR"
