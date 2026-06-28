@@ -7,15 +7,15 @@ set -Eeuo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/utils.sh"
 
 # Extensions to install via gnome-extensions-cli (gext)
-# Format: "uuid" "human-readable name"
+# Format: "uuid" paired with its display name in GEXT_NAMES
 GEXT_EXTENSIONS=(
-    "blur-my-shell@auber"
+    "blur-my-shell@auber.me"
     "dash-to-dock@micxgx.gmail.com"
     "arcmenu@arcmenu.com"
     "just-perfection-desktop@just-perfection"
+    "Vitals@CoreCoding.com"
     "clipboard-indicator@tudmotu.com"
     "caffeine@patapon.info"
-    "tiling-assistant@leleat-on-github"
 )
 
 GEXT_NAMES=(
@@ -23,9 +23,9 @@ GEXT_NAMES=(
     "Dash to Dock"
     "ArcMenu"
     "Just Perfection"
+    "Vitals"
     "Clipboard Indicator"
     "Caffeine"
-    "Tiling Assistant"
 )
 
 # ── Extension Manager Detection ─────────────────────────────────────────────
@@ -48,7 +48,7 @@ print_extension_fallback_guide() {
     printf "\n"
     printf "${BOLD}${YELLOW}  ──────────────────────────────────────────────────${RESET}\n"
     printf "\n"
-    printf "${BOLD}${YELLOW}  ⚠  Automatic extension installation failed.${RESET}\n"
+    printf "${BOLD}${YELLOW}  ⚠  Some extensions need manual installation.${RESET}\n"
     printf "\n"
 
     if has_extension_manager; then
@@ -63,9 +63,10 @@ print_extension_fallback_guide() {
         printf "    ${CYAN}•${RESET} %s\n" "$name"
     done
     printf "\n"
-    printf "  Install them, then restart GNOME Shell if required.\n"
-    printf "  ${DIM}(On Wayland: log out and log back in)${RESET}\n"
+    printf "  After installing, ${BOLD}log out and log back in${RESET} to activate them.\n"
+    printf "  ${DIM}(Wayland: log out required. X11: Alt+F2 → r → Enter)${RESET}\n"
     printf "\n"
+    printf "  ${DIM}Note: GNOME extension settings only apply after restart.${RESET}\n"
     printf "${BOLD}${YELLOW}  ──────────────────────────────────────────────────${RESET}\n"
     printf "\n"
 }

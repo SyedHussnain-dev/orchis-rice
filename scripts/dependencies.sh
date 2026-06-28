@@ -21,17 +21,18 @@ PACKAGES=(
     libglib2.0-dev-bin
     gtk2-engines-murrine
     pipx
+    dconf-cli
 )
 
 # Check which packages are already installed
 get_missing_packages() {
-    local missing=()
+    local -a missing=()
     for pkg in "${PACKAGES[@]}"; do
         if ! dpkg -s "$pkg" &>/dev/null; then
             missing+=("$pkg")
         fi
     done
-    printf '%s\n' "${missing[@]}"
+    printf '%s\n' "${missing[@]+${missing[@]}}"
 }
 
 install_dependencies() {
@@ -59,9 +60,10 @@ install_dependencies() {
         return 1
     }
 
-    # Ensure pipx path is set up
+    # Ensure pipx path is set up for this session
     if command -v pipx &>/dev/null; then
         pipx ensurepath &>/dev/null 2>&1 || true
+        export PATH="${HOME}/.local/bin:${PATH}"
     fi
 
     success "Dependencies installed"

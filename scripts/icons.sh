@@ -7,12 +7,13 @@ set -Eeuo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/utils.sh"
 
 TELA_REPO="https://github.com/vinceliuice/Tela-circle-icon-theme.git"
+ICONS_BASE_DIR="${HOME}/.local/share/icons"
 
 install_icons() {
     header "Installing Tela Circle Icons"
 
     # Check if already installed
-    if [[ -d "${HOME}/.local/share/icons/Tela-circle-dark" ]]; then
+    if [[ -d "${ICONS_BASE_DIR}/Tela-circle-dark" ]]; then
         info "Tela Circle Dark icons already installed"
         success "Tela Circle Dark icons ready"
         return 0
@@ -28,21 +29,29 @@ install_icons() {
         return 1
     }
 
-    info "Installing Tela Circle Dark icons..."
+    info "Installing Tela Circle Dark icons (standard + dark variants only)..."
     cd "$clone_dir"
-    bash ./install.sh -d "${HOME}/.local/share/icons" 2>/dev/null || {
+    # Install only the standard set — this creates Tela-circle, Tela-circle-dark,
+    # and Tela-circle-light without all the accent-color variants (saves time and space)
+    if bash ./install.sh -d "$ICONS_BASE_DIR" 2>/dev/null; then
+        success "Tela Circle Dark icons installed"
+    else
         error "Tela Circle icon installation failed"
         error "Try installing manually: https://github.com/vinceliuice/Tela-circle-icon-theme"
         cd "$ORCHIS_RICE_DIR"
         return 1
-    }
+    fi
     cd "$ORCHIS_RICE_DIR"
 
-    success "Tela Circle Dark icons installed"
+    # Verify the expected theme directory exists
+    if [[ ! -d "${ICONS_BASE_DIR}/Tela-circle-dark" ]]; then
+        warn "Tela-circle-dark directory not found after installation"
+        warn "Icon theme may still work — check ~/.local/share/icons/"
+    fi
 }
 
 remove_icons() {
     info "Removing Tela Circle icons..."
-    rm -rf "${HOME}/.local/share/icons/Tela-circle"*
+    rm -rf "${ICONS_BASE_DIR}/Tela-circle"*
     success "Tela Circle icons removed"
 }

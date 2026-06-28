@@ -45,6 +45,9 @@ apply_gnome_settings() {
     safe_gsettings set org.gnome.desktop.wm.preferences button-layout "${BUTTON_LAYOUT}"
     safe_gsettings set org.gnome.mutter center-new-windows true
     safe_gsettings set org.gnome.mutter edge-tiling true
+    # Focus windows when they demand attention without stealing focus
+    safe_gsettings set org.gnome.desktop.wm.preferences focus-new-windows 'smart'
+    safe_gsettings set org.gnome.desktop.wm.preferences num-workspaces 4
 
     # ── Clock ───────────────────────────────────────────────────────────────
     info "Configuring clock..."
@@ -60,6 +63,10 @@ apply_gnome_settings() {
 
     # ── Animations ──────────────────────────────────────────────────────────
     safe_gsettings set org.gnome.desktop.interface enable-animations true
+
+    # ── Touchpad (laptop-friendly defaults) ─────────────────────────────────
+    safe_gsettings set org.gnome.desktop.peripherals.touchpad tap-to-click true
+    safe_gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll true
 
     # ── Favorite apps in dock ───────────────────────────────────────────────
     info "Detecting and setting favorite apps..."
@@ -86,6 +93,8 @@ apply_gnome_settings() {
         safe_gsettings set org.gnome.shell.extensions.blur-my-shell.panel sigma 30
         safe_gsettings set org.gnome.shell.extensions.blur-my-shell.overview blur true
         safe_gsettings set org.gnome.shell.extensions.blur-my-shell.overview sigma 30
+        safe_gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock blur true
+        safe_gsettings set org.gnome.shell.extensions.blur-my-shell.dash-to-dock sigma 20
     else
         warn "Blur My Shell schema not found — skipping configuration"
     fi
@@ -106,6 +115,8 @@ apply_gnome_settings() {
         safe_gsettings set org.gnome.shell.extensions.dash-to-dock custom-theme-shrink true
         safe_gsettings set org.gnome.shell.extensions.dash-to-dock extend-height false
         safe_gsettings set org.gnome.shell.extensions.dash-to-dock apply-custom-theme true
+        safe_gsettings set org.gnome.shell.extensions.dash-to-dock multi-monitor false
+        safe_gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'focus-or-previews'
     else
         warn "Dash to Dock schema not found — skipping configuration"
     fi
@@ -115,6 +126,7 @@ apply_gnome_settings() {
         info "Configuring ArcMenu..."
         safe_gsettings set org.gnome.shell.extensions.arcmenu menu-layout 'Eleven'
         safe_gsettings set org.gnome.shell.extensions.arcmenu menu-button-icon 'Distro_Icon'
+        safe_gsettings set org.gnome.shell.extensions.arcmenu search-provider-open-windows true
     else
         warn "ArcMenu schema not found — skipping configuration"
     fi
@@ -125,8 +137,23 @@ apply_gnome_settings() {
         safe_gsettings set org.gnome.shell.extensions.just-perfection activities-button false
         safe_gsettings set org.gnome.shell.extensions.just-perfection animation 3
         safe_gsettings set org.gnome.shell.extensions.just-perfection notification-banner-position 2
+        safe_gsettings set org.gnome.shell.extensions.just-perfection workspace false
+        safe_gsettings set org.gnome.shell.extensions.just-perfection window-demands-attention-focus false
     else
         warn "Just Perfection schema not found — skipping configuration"
+    fi
+
+    # Vitals — system monitor in top panel
+    if schema_exists "org.gnome.shell.extensions.vitals"; then
+        info "Configuring Vitals..."
+        safe_gsettings set org.gnome.shell.extensions.vitals position-in-panel 2
+        safe_gsettings set org.gnome.shell.extensions.vitals show-storage true
+        safe_gsettings set org.gnome.shell.extensions.vitals show-network true
+        safe_gsettings set org.gnome.shell.extensions.vitals show-memory true
+        safe_gsettings set org.gnome.shell.extensions.vitals show-processor true
+        safe_gsettings set org.gnome.shell.extensions.vitals update-time 3
+    else
+        warn "Vitals schema not found — skipping configuration"
     fi
 
     # ── Theme Verification ──────────────────────────────────────────────────
@@ -140,6 +167,7 @@ apply_gnome_settings() {
     else
         warn "Theme installed but could not be activated automatically"
         warn "Expected: ${GTK_THEME}, Got: ${applied_theme:-unknown}"
+        warn "Log out and back in — it will activate on next session"
         INSTALL_STATUS[theme_applied]="failed"
     fi
 
@@ -165,6 +193,7 @@ reset_gnome_settings() {
     # Reset window management
     safe_gsettings reset org.gnome.desktop.wm.preferences button-layout
     safe_gsettings reset org.gnome.mutter center-new-windows
+    safe_gsettings reset org.gnome.desktop.wm.preferences focus-new-windows
 
     # Reset favorites
     safe_gsettings reset org.gnome.shell favorite-apps
@@ -173,6 +202,10 @@ reset_gnome_settings() {
     safe_gsettings reset org.gnome.desktop.interface clock-show-weekday
     safe_gsettings reset org.gnome.desktop.interface clock-show-date
     safe_gsettings reset org.gnome.desktop.interface clock-format
+
+    # Reset touchpad
+    safe_gsettings reset org.gnome.desktop.peripherals.touchpad tap-to-click
+    safe_gsettings reset org.gnome.desktop.peripherals.touchpad natural-scroll
 
     success "GNOME settings reset to defaults"
 }

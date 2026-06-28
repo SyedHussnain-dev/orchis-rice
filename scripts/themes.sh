@@ -8,11 +8,17 @@ source "$(dirname "${BASH_SOURCE[0]}")/utils.sh"
 
 ORCHIS_REPO="https://github.com/vinceliuice/Orchis-theme.git"
 
+# Orchis installs to ~/.themes by default; also check ~/.local/share/themes
+_theme_installed() {
+    [[ -d "${HOME}/.themes/Orchis-Dark" ]] || \
+    [[ -d "${HOME}/.local/share/themes/Orchis-Dark" ]]
+}
+
 install_theme() {
     header "Installing Orchis Dark Theme"
 
     # Check if already installed
-    if [[ -d "${HOME}/.themes/Orchis-Dark" ]]; then
+    if _theme_installed; then
         info "Orchis-Dark theme already installed"
         success "Orchis Dark theme ready"
         return 0
@@ -30,6 +36,9 @@ install_theme() {
 
     info "Installing Orchis Dark..."
     cd "$clone_dir"
+    # -t default: standard accent color
+    # -c dark: dark variant
+    # --tweaks macos: macOS-style window controls (matches button-layout config)
     bash ./install.sh -t default -c dark --tweaks macos 2>/dev/null || {
         error "Orchis theme installation script failed"
         error "Try installing manually: https://github.com/vinceliuice/Orchis-theme"
@@ -38,11 +47,17 @@ install_theme() {
     }
     cd "$ORCHIS_RICE_DIR"
 
-    success "Orchis Dark theme installed"
+    if _theme_installed; then
+        success "Orchis Dark theme installed"
+    else
+        warn "Orchis theme script ran but theme directory not found"
+        warn "Theme may still apply — check ~/.themes/"
+    fi
 }
 
 remove_theme() {
     info "Removing Orchis theme..."
     rm -rf "${HOME}/.themes/Orchis"*
+    rm -rf "${HOME}/.local/share/themes/Orchis"*
     success "Orchis theme removed"
 }

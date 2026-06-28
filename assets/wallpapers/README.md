@@ -1,17 +1,21 @@
 # Wallpapers
 
-Place your beautiful wallpapers in this directory to have them automatically detected by the Orchis Rice installer!
+Place any `.jpg`, `.jpeg`, `.png`, or `.webp` image files here.
 
-## Supported Formats
-- `.jpg`
-- `.jpeg`
-- `.png`
-- `.webp`
+The installer will detect them automatically and let you choose one during setup.
 
-## How it works
-During installation, the installer will scan this directory and present a numbered menu for you to select your preferred wallpaper. The selected wallpaper will be applied to both the desktop background and the lock screen for both light and dark modes.
+## Bundled wallpapers
 
-## Licensing Note
-Due to licensing constraints, we do not bundle copyrighted wallpapers with this repository. You can find beautiful wallpapers on sites like:
-- [Unsplash](https://unsplash.com)
-- [Wallhaven](https://wallhaven.cc)
+- `dylan-michaud-sHsMy9-DQBI-unsplash.jpg` — Forest mist by Dylan Michaud (Unsplash)
+- `tristan-frank-nhKhaU3u3lg-unsplash.jpg` — Mountain dusk by Tristan Frank (Unsplash)
+
+## Adding more
+
+Copy any image you like into this folder before running `./install.sh`.
+
+## Free dark wallpaper sources
+
+- [Unsplash – Dark](https://unsplash.com/s/photos/dark-wallpaper) (free to use)
+- [NASA Image Gallery](https://www.nasa.gov/multimedia/imagegallery/) (public domain)
+- [ESA / Hubble](https://esahubble.org/images/) (CC BY 4.0)
+- [Wallhaven](https://wallhaven.cc) (filter by dark)
