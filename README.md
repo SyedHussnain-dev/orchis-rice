@@ -10,8 +10,6 @@
 > 🌸 A beautiful, automated Ubuntu GNOME customization toolkit.
 > Supports Ubuntu 24.04, 24.10, and newer releases.
 
-![Desktop Preview](assets/screenshots/desktop-preview.png)
-
 Transform your standard Ubuntu installation into a polished, modern, and beautiful desktop environment with a single command. Orchis Rice automates the installation and configuration of themes, icons, cursors, fonts, and GNOME extensions.
 
 ## Features
@@ -56,14 +54,6 @@ To undo the changes and revert to your previous setup, run the uninstaller scrip
 ```bash
 ./uninstall.sh
 ```
-
-## Preview
-
-![Installer Preview](assets/screenshots/installer-preview.png)
-![Before & After](assets/screenshots/before-after.png)
-
-*(Note: Add screenshot files to `assets/screenshots/`)*
-
 ## Configuration
 
 Customize your installation by editing `config/default.conf`. All settings have sensible defaults, so this step is entirely optional.
@@ -88,6 +78,8 @@ The installer automatically detects your browser (Brave → Firefox → Chrome �
 
 You can easily add your own wallpapers to the installation process. Simply place your `.jpg`, `.png`, or `.webp` files in the `assets/wallpapers/` directory before running the installer. You will be prompted to select your preferred wallpaper during installation.
 
+**Note:** The wallpapers included in this project are sourced from [Unsplash](https://unsplash.com) and are free to use under the Unsplash License, avoiding any copyright issues.
+
 ## FAQ & Troubleshooting
 
 **Q: The installer failed to configure GNOME extensions.**
@@ -99,13 +91,6 @@ A: Ensure your terminal emulator is configured to use the newly installed `JetBr
 **Q: How do I undo the changes?**
 A: Run `./uninstall.sh`. This will remove the themes, icons, cursors, and fonts installed by Orchis Rice, and reset your GNOME settings to defaults.
 
-## Roadmap
-- [ ] Add light theme variants
-- [ ] Support custom wallpaper downloading via URL
-- [ ] Support Arch Linux / Fedora
-
-## Contributing
-Contributions are welcome! Please ensure any new bash scripts pass ShellCheck and `bash -n`. Keep functions small and maintain the simple, modular architecture.
 
 ## Credits
 This project brings together amazing open-source work from:
