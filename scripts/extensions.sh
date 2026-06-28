@@ -150,15 +150,15 @@ install_extensions() {
             info "Installing ${name}..."
             if install_extension_via_gext "$uuid" "$name"; then
                 success "${name} installed"
-                ((installed++))
+                installed=$((installed + 1))
                 EXTENSION_RESULTS+=("✓ ${name}")
             else
-                ((failed++))
+                failed=$((failed + 1))
                 failed_names+=("$name")
                 EXTENSION_RESULTS+=("⚠ ${name} (manual install required)")
             fi
         else
-            ((failed++))
+            failed=$((failed + 1))
             failed_names+=("$name")
             EXTENSION_RESULTS+=("⚠ ${name} (manual install required)")
         fi

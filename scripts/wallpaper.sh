@@ -27,13 +27,13 @@ download_extra_wallpapers() {
 
         if [[ -f "$dest" ]]; then
             info "Already have: ${filename}"
-            ((downloaded++))
+            downloaded=$((downloaded + 1))
             continue
         fi
 
         if download "$url" "$dest" "Downloading ${filename}"; then
             success "Downloaded: ${filename}"
-            ((downloaded++))
+            downloaded=$((downloaded + 1))
         else
             warn "Could not download: ${filename} — skipping"
             rm -f "$dest"
