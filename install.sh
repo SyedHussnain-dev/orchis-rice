@@ -131,6 +131,16 @@ run_installation() {
     CURRENT_STEP=0
     TOTAL_STEPS=8
 
+    # Let user configure Orchis theme options before installing
+    printf "\n"
+    printf "  ${BOLD}${CYAN}Would you like to configure Orchis theme options? [y/N]:${RESET} "
+    read -r configure_choice
+    if [[ "${configure_choice,,}" == "y" || "${configure_choice,,}" == "yes" ]]; then
+        configure_theme false
+    else
+        info "Using default theme configuration"
+    fi
+
     # Run installation steps
     install_dependencies
     install_theme
@@ -152,7 +162,11 @@ run_installation() {
 
 # ── Configure Theme ─────────────────────────────────────────────────────────
 configure_theme() {
-    clear || true
+    local from_menu="${1:-true}"
+
+    if [[ "$from_menu" == "true" ]]; then
+        clear || true
+    fi
     printf "\n"
     printf "${BOLD}${MAGENTA}  ======================================================${RESET}\n"
     printf "${CYAN}             Configure Orchis Theme Options${RESET}\n"
@@ -206,8 +220,10 @@ configure_theme() {
         printf "\n  ${RED}✗ Config file not found at ${CONFIG_FILE}${RESET}\n"
     fi
 
-    printf "\n  Press Enter to return to main menu..."
-    read -r
+    if [[ "$from_menu" == "true" ]]; then
+        printf "\n  Press Enter to return to main menu..."
+        read -r
+    fi
 }
 
 
