@@ -68,17 +68,6 @@ apply_gnome_settings() {
     safe_gsettings set org.gnome.desktop.peripherals.touchpad tap-to-click true
     safe_gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll true
 
-    # ── Favorite apps in dock ───────────────────────────────────────────────
-    info "Detecting and setting favorite apps..."
-    local favorites_array
-    favorites_array=$(build_favorites)
-
-    if [[ "$favorites_array" == "[]" ]]; then
-        warn "No favorite apps detected — skipping dock favorites"
-    else
-        info "Setting dock favorites: ${favorites_array}"
-        safe_gsettings set org.gnome.shell favorite-apps "$favorites_array"
-    fi
 
     # ── Night Light ─────────────────────────────────────────────────────────
     safe_gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
@@ -194,9 +183,6 @@ reset_gnome_settings() {
     safe_gsettings reset org.gnome.desktop.wm.preferences button-layout
     safe_gsettings reset org.gnome.mutter center-new-windows
     safe_gsettings reset org.gnome.desktop.wm.preferences focus-new-windows
-
-    # Reset favorites
-    safe_gsettings reset org.gnome.shell favorite-apps
 
     # Reset clock
     safe_gsettings reset org.gnome.desktop.interface clock-show-weekday

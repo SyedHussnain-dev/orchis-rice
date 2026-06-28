@@ -17,7 +17,7 @@ Transform your standard Ubuntu installation into a polished, modern, and beautif
 - **Automated Installation**: One command handles everything
 - **Graceful Error Handling**: Explains issues without silently failing
 - **Modular Architecture**: Clean, readable, and maintainable bash scripts
-- **Configurable**: Edit `config/default.conf` to customize themes, fonts, and dock favorites
+- **Configurable**: Edit `config/default.conf` to customize themes and fonts
 - **Smart Detection**: Automatically finds your browser, editor, and installed fonts
 - **Customizable**: Easy to tweak or add your own wallpapers
 
@@ -68,8 +68,6 @@ CURSOR_THEME="Bibata-Modern-Ice"
 FONT_NAME="Inter"
 MONOSPACE_FONT="JetBrainsMono Nerd Font"
 
-# Dock favorites (detected automatically — only existing apps are added)
-FAVORITES="brave,firefox,code,terminal,files,settings"
 ```
 
 The installer automatically detects your browser (Brave → Firefox → Chrome → Chromium), code editor (VS Code / Code OSS), and monospace font family. If `config/default.conf` is missing, built-in defaults are used.
