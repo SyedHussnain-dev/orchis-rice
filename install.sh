@@ -114,7 +114,7 @@ run_installation() {
 
     # Pre-flight checks
     info "Checking system requirements..."
-    check_ubuntu || {
+    check_os || {
         warn "This script might not work correctly on this OS."
     }
     check_gnome || {
@@ -156,7 +156,7 @@ main() {
     printf "\n"
     printf "${BOLD}${MAGENTA}  ======================================================${RESET}\n"
     print_logo
-    printf "${CYAN}               Ubuntu Desktop Installer${RESET}\n"
+    printf "${CYAN}               Linux Desktop Installer${RESET}\n"
     printf "${BOLD}${MAGENTA}  ======================================================${RESET}\n"
     printf "\n"
     printf "  ${BOLD}1.${RESET} Install\n"

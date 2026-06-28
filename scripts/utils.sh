@@ -191,8 +191,8 @@ download() {
     fi
 }
 
-# ── Ubuntu Version Detection ───────────────────────────────────────────────
-check_ubuntu() {
+# ── OS Version Detection ───────────────────────────────────────────────
+check_os() {
     if [[ ! -f /etc/os-release ]]; then
         warn "Cannot detect OS — /etc/os-release not found"
         return 1
@@ -201,30 +201,54 @@ check_ubuntu() {
     # shellcheck source=/dev/null
     source /etc/os-release
 
-    if [[ "${ID:-}" != "ubuntu" ]]; then
-        warn "This script is designed for Ubuntu (detected: ${ID:-unknown})"
-        return 1
-    fi
-
     local version="${VERSION_ID:-0}"
 
-    # Fully supported versions — no warnings
-    if [[ "$version" == "24.04" ]] || [[ "$version" == "24.10" ]]; then
-        info "Detected Ubuntu ${version} — fully supported"
-        return 0
-    fi
+    if [[ "${ID:-}" == "ubuntu" ]]; then
+        export OS_TYPE="ubuntu"
+        export PACKAGE_MANAGER="apt"
+        
+        # Fully supported versions — no warnings
+        if [[ "$version" == "24.04" ]] || [[ "$version" == "24.10" ]]; then
+            info "Detected Ubuntu ${version} — fully supported"
+            return 0
+        fi
 
-    # Newer than 24.04 — informational notice, continue
-    if awk "BEGIN {exit !($version > 24.04)}"; then
-        info "Detected Ubuntu ${version}"
-        info "Proceeding... Some settings may differ on this version."
-        return 0
-    fi
+        # Newer than 24.04 — informational notice, continue
+        if awk "BEGIN {exit !($version > 24.04)}"; then
+            info "Detected Ubuntu ${version}"
+            info "Proceeding... Some settings may differ on this version."
+            return 0
+        fi
 
-    # Older or unrecognized — warn but continue
-    warn "Designed for Ubuntu 24.04+ (detected: ${version})"
-    warn "Proceeding anyway — some features may not work"
-    return 0
+        # Older or unrecognized — warn but continue
+        warn "Designed for Ubuntu 24.04+ (detected: ${version})"
+        warn "Proceeding anyway — some features may not work"
+        return 0
+
+    elif [[ "${ID:-}" == "fedora" ]]; then
+        export OS_TYPE="fedora"
+        export PACKAGE_MANAGER="dnf"
+        
+        # Fully supported versions — no warnings
+        if [[ "$version" == "40" ]] || [[ "$version" == "41" ]]; then
+            info "Detected Fedora ${version} — fully supported"
+            return 0
+        fi
+
+        if awk "BEGIN {exit !($version > 41)}"; then
+            info "Detected Fedora ${version}"
+            info "Proceeding... Some settings may differ on this version."
+            return 0
+        fi
+
+        warn "Designed for Fedora 40+ (detected: ${version})"
+        warn "Proceeding anyway — some features may not work"
+        return 0
+
+    else
+        warn "This script is designed for Ubuntu and Fedora (detected: ${ID:-unknown})"
+        return 1
+    fi
 }
 
 # Check GNOME version

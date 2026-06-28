@@ -34,8 +34,14 @@ has_extension_manager() {
     if command -v extension-manager &>/dev/null; then
         return 0
     fi
-    if dpkg -s gnome-shell-extension-manager &>/dev/null 2>&1; then
-        return 0
+    if [[ "${PACKAGE_MANAGER:-apt}" == "apt" ]]; then
+        if dpkg -s gnome-shell-extension-manager &>/dev/null 2>&1; then
+            return 0
+        fi
+    elif [[ "${PACKAGE_MANAGER:-apt}" == "dnf" ]]; then
+        if rpm -q extension-manager &>/dev/null 2>&1; then
+            return 0
+        fi
     fi
     return 1
 }
@@ -54,7 +60,7 @@ print_extension_fallback_guide() {
     if has_extension_manager; then
         printf "  ${BOLD}Open Extension Manager${RESET} (already installed) and search for:\n"
     else
-        printf "  Install ${BOLD}Extension Manager${RESET} from Ubuntu Software, then search for:\n"
+        printf "  Install ${BOLD}Extension Manager${RESET} from your Software Center, then search for:\n"
         printf "  ${DIM}  Or visit: https://extensions.gnome.org${RESET}\n"
     fi
 
@@ -117,14 +123,25 @@ install_extension_via_gext() {
 install_extensions() {
     header "Installing GNOME Extensions"
 
-    # Install AppIndicator via apt (most reliable method)
-    if dpkg -s gnome-shell-extension-appindicator &>/dev/null; then
-        info "AppIndicator extension already installed"
-    else
-        info "Installing AppIndicator extension via apt..."
-        sudo apt-get install -y -qq gnome-shell-extension-appindicator 2>/dev/null || {
-            warn "Could not install AppIndicator via apt"
-        }
+    # Install AppIndicator via package manager (most reliable method)
+    if [[ "${PACKAGE_MANAGER:-apt}" == "apt" ]]; then
+        if dpkg -s gnome-shell-extension-appindicator &>/dev/null; then
+            info "AppIndicator extension already installed"
+        else
+            info "Installing AppIndicator extension via apt..."
+            sudo apt-get install -y -qq gnome-shell-extension-appindicator 2>/dev/null || {
+                warn "Could not install AppIndicator via apt"
+            }
+        fi
+    elif [[ "${PACKAGE_MANAGER:-apt}" == "dnf" ]]; then
+        if rpm -q gnome-shell-extension-appindicator &>/dev/null; then
+            info "AppIndicator extension already installed"
+        else
+            info "Installing AppIndicator extension via dnf..."
+            sudo dnf install -y -q gnome-shell-extension-appindicator 2>/dev/null || {
+                warn "Could not install AppIndicator via dnf"
+            }
+        fi
     fi
 
     # Enable AppIndicator

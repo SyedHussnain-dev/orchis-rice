@@ -7,10 +7,10 @@
  ╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝╚══════╝
 ```
 
-> 🌸 An automated Ubuntu GNOME customization toolkit.
-> Supports Ubuntu 24.04, 24.10, and newer releases.
+> 🌸 An automated Ubuntu and Fedora GNOME customization toolkit.
+> Supports Ubuntu 24.04+, Fedora 40+, and newer releases.
 
-Transform your standard Ubuntu installation into a polished, modern, and beautiful desktop environment with a single command. Orchis Rice automates the installation and configuration of themes, icons, cursors, fonts, and GNOME extensions.
+Transform your standard Ubuntu or Fedora installation into a polished, modern, and beautiful desktop environment with a single command. Orchis Rice automates the installation and configuration of themes, icons, cursors, fonts, and GNOME extensions.
 
 ## Features
 
