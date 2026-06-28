@@ -9,7 +9,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/utils.sh"
 # Extensions to install via gnome-extensions-cli (gext)
 # Format: "uuid" paired with its display name in GEXT_NAMES
 GEXT_EXTENSIONS=(
-    "blur-my-shell@auber.me"
+    "blur-my-shell@aunetx"
     "dash-to-dock@micxgx.gmail.com"
     "arcmenu@arcmenu.com"
     "just-perfection-desktop@just-perfection"
@@ -101,13 +101,17 @@ install_extension_via_gext() {
     local uuid="$1"
     local name="$2"
 
-    gext install "$uuid" 2>/dev/null || {
-        warn "Could not install ${name} automatically"
+    # Capture output to prevent spurious error messages if it fails
+    if ! gext install "$uuid" &>/dev/null; then
+        warn "Could not install ${name} automatically via gext"
         return 1
-    }
+    fi
 
-    # Enable the extension
-    gnome-extensions enable "$uuid" 2>/dev/null || true
+    # Enable the extension and use it as a verification step
+    if ! gnome-extensions enable "$uuid" 2>/dev/null; then
+        warn "Could not enable ${name} (it may not be installed correctly)"
+        return 1
+    fi
 }
 
 install_extensions() {
