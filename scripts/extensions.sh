@@ -28,6 +28,48 @@ GEXT_NAMES=(
     "Tiling Assistant"
 )
 
+# ── Extension Manager Detection ─────────────────────────────────────────────
+# Check if the Extension Manager GUI app is available
+has_extension_manager() {
+    if command -v extension-manager &>/dev/null; then
+        return 0
+    fi
+    if dpkg -s gnome-shell-extension-manager &>/dev/null 2>&1; then
+        return 0
+    fi
+    return 1
+}
+
+# ── Rich Fallback Guide ─────────────────────────────────────────────────────
+# Display a helpful recovery guide when automatic installation fails
+print_extension_fallback_guide() {
+    local -a failed_names=("$@")
+
+    printf "\n"
+    printf "${BOLD}${YELLOW}  ──────────────────────────────────────────────────${RESET}\n"
+    printf "\n"
+    printf "${BOLD}${YELLOW}  ⚠  Automatic extension installation failed.${RESET}\n"
+    printf "\n"
+
+    if has_extension_manager; then
+        printf "  ${BOLD}Open Extension Manager${RESET} (already installed) and search for:\n"
+    else
+        printf "  Install ${BOLD}Extension Manager${RESET} from Ubuntu Software, then search for:\n"
+        printf "  ${DIM}  Or visit: https://extensions.gnome.org${RESET}\n"
+    fi
+
+    printf "\n"
+    for name in "${failed_names[@]}"; do
+        printf "    ${CYAN}•${RESET} %s\n" "$name"
+    done
+    printf "\n"
+    printf "  Install them, then restart GNOME Shell if required.\n"
+    printf "  ${DIM}(On Wayland: log out and log back in)${RESET}\n"
+    printf "\n"
+    printf "${BOLD}${YELLOW}  ──────────────────────────────────────────────────${RESET}\n"
+    printf "\n"
+}
+
 install_gext_cli() {
     # Install gnome-extensions-cli via pipx
     if command -v gext &>/dev/null; then
@@ -60,7 +102,6 @@ install_extension_via_gext() {
 
     gext install "$uuid" 2>/dev/null || {
         warn "Could not install ${name} automatically"
-        warn "Install manually: https://extensions.gnome.org"
         return 1
     }
 
@@ -85,40 +126,48 @@ install_extensions() {
     gnome-extensions enable "appindicatorsupport@rgcjonas.gmail.com" 2>/dev/null || true
 
     # Install gext CLI tool
+    local gext_available=true
     if ! install_gext_cli; then
+        gext_available=false
         warn "Cannot install extensions automatically without gnome-extensions-cli"
-        warn ""
-        warn "To install extensions manually, visit https://extensions.gnome.org"
-        warn "and install the following:"
-        for name in "${GEXT_NAMES[@]}"; do
-            warn "  • ${name}"
-        done
-        return 0
     fi
 
     # Install each extension
     local installed=0
     local failed=0
+    local -a failed_names=()
 
     for i in "${!GEXT_EXTENSIONS[@]}"; do
         local uuid="${GEXT_EXTENSIONS[$i]}"
         local name="${GEXT_NAMES[$i]}"
 
-        info "Installing ${name}..."
-        if install_extension_via_gext "$uuid" "$name"; then
-            success "${name} installed"
-            ((installed++))
+        if [[ "$gext_available" == true ]]; then
+            info "Installing ${name}..."
+            if install_extension_via_gext "$uuid" "$name"; then
+                success "${name} installed"
+                ((installed++))
+                EXTENSION_RESULTS+=("✓ ${name}")
+            else
+                ((failed++))
+                failed_names+=("$name")
+                EXTENSION_RESULTS+=("⚠ ${name} (manual install required)")
+            fi
         else
             ((failed++))
+            failed_names+=("$name")
+            EXTENSION_RESULTS+=("⚠ ${name} (manual install required)")
         fi
     done
 
+    # Show fallback guide if any extensions failed
     if [[ $failed -gt 0 ]]; then
-        warn "${failed} extension(s) need manual installation"
-        warn "Visit: https://extensions.gnome.org"
+        print_extension_fallback_guide "${failed_names[@]}"
+        INSTALL_STATUS[extensions]="partial"
+    else
+        INSTALL_STATUS[extensions]="installed"
     fi
 
-    success "Extensions setup complete (${installed} installed)"
+    success "Extensions setup complete (${installed} installed, ${failed} need manual installation)"
 }
 
 remove_extensions() {

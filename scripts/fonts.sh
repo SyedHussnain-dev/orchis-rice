@@ -17,9 +17,13 @@ install_fonts() {
     mkdir -p "$FONTS_DIR"
     setup_temp
 
+    local inter_ok=false
+    local jb_ok=false
+
     # ── Inter ───────────────────────────────────────────────────────────────
     if ls "${FONTS_DIR}"/Inter*.ttf &>/dev/null || ls "${FONTS_DIR}"/Inter/*.ttf &>/dev/null; then
         info "Inter font already installed"
+        inter_ok=true
     else
         info "Downloading Inter font..."
         local inter_zip="${TEMP_DIR}/Inter.zip"
@@ -35,13 +39,14 @@ install_fonts() {
 
             # Install variable and static fonts
             find "$inter_dir" -name "*.ttf" -exec cp {} "$FONTS_DIR/" \;
-            success "Inter font installed"
+            inter_ok=true
         fi
     fi
 
     # ── JetBrains Mono Nerd Font ────────────────────────────────────────────
     if ls "${FONTS_DIR}"/JetBrainsMonoNerd*.ttf &>/dev/null; then
         info "JetBrains Mono Nerd Font already installed"
+        jb_ok=true
     else
         info "Downloading JetBrains Mono Nerd Font..."
         local jb_zip="${TEMP_DIR}/JetBrainsMono.zip"
@@ -52,15 +57,62 @@ install_fonts() {
         if [[ -f "$jb_zip" ]]; then
             info "Installing JetBrains Mono Nerd Font..."
             unzip -qo "$jb_zip" -d "$FONTS_DIR/" '*.ttf'
-            success "JetBrains Mono Nerd Font installed"
+            jb_ok=true
         fi
     fi
 
-    # Rebuild font cache
+    # ── Rebuild Font Cache ──────────────────────────────────────────────────
     info "Rebuilding font cache..."
     fc-cache -f "$FONTS_DIR" 2>/dev/null || true
 
-    success "Fonts installed"
+    # ── Verification ────────────────────────────────────────────────────────
+    local verified=true
+
+    # Verify Inter font files exist
+    if [[ "$inter_ok" == true ]]; then
+        if ls "${FONTS_DIR}"/Inter*.ttf &>/dev/null || ls "${FONTS_DIR}"/Inter/*.ttf &>/dev/null; then
+            # Verify via fc-list
+            if fc-list | grep -qi "Inter" &>/dev/null; then
+                success "Inter font verified"
+            else
+                warn "Inter font files present but not detected by fc-list"
+                verified=false
+            fi
+        else
+            warn "Inter font files not found after installation"
+            verified=false
+        fi
+    fi
+
+    # Verify JetBrains Mono Nerd Font files exist
+    if [[ "$jb_ok" == true ]]; then
+        if ls "${FONTS_DIR}"/JetBrainsMonoNerd*.ttf &>/dev/null; then
+            # Verify via fc-list
+            if fc-list | grep -qi "JetBrainsMono" &>/dev/null; then
+                success "JetBrains Mono Nerd Font verified"
+            else
+                warn "JetBrains Mono font files present but not detected by fc-list"
+                verified=false
+            fi
+        else
+            warn "JetBrains Mono Nerd Font files not found after installation"
+            verified=false
+        fi
+    fi
+
+    # ── Final Status ────────────────────────────────────────────────────────
+    if [[ "$inter_ok" == true ]] && [[ "$jb_ok" == true ]] && [[ "$verified" == true ]]; then
+        success "Fonts installed and verified"
+        INSTALL_STATUS[fonts]="installed"
+    elif [[ "$inter_ok" == true ]] || [[ "$jb_ok" == true ]]; then
+        warn "Some fonts may not have installed correctly"
+        warn "Check ~/.local/share/fonts/ and run: fc-list | grep -i 'inter\|jetbrains'"
+        INSTALL_STATUS[fonts]="partial"
+    else
+        warn "Font installation failed"
+        warn "You can install fonts manually to ~/.local/share/fonts/"
+        INSTALL_STATUS[fonts]="failed"
+    fi
 }
 
 remove_fonts() {

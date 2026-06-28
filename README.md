@@ -7,7 +7,8 @@
 ╚═╝     ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝╚══════╝
 ```
 
-> 🌸 A beautiful, automated Ubuntu 24.04 GNOME customization toolkit.
+> 🌸 A beautiful, automated Ubuntu GNOME customization toolkit.
+> Supports Ubuntu 24.04, 24.10, and newer releases.
 
 ![Desktop Preview](assets/screenshots/desktop-preview.png)
 
@@ -18,6 +19,8 @@ Transform your standard Ubuntu installation into a polished, modern, and beautif
 - **Automated Installation**: One command handles everything
 - **Graceful Error Handling**: Explains issues without silently failing
 - **Modular Architecture**: Clean, readable, and maintainable bash scripts
+- **Configurable**: Edit `config/default.conf` to customize themes, fonts, and dock favorites
+- **Smart Detection**: Automatically finds your browser, editor, and installed fonts
 - **Customizable**: Easy to tweak or add your own wallpapers
 
 ## What's Included
@@ -53,6 +56,26 @@ chmod +x install.sh uninstall.sh scripts/*.sh
 
 *(Note: Add screenshot files to `assets/screenshots/`)*
 
+## Configuration
+
+Customize your installation by editing `config/default.conf`. All settings have sensible defaults, so this step is entirely optional.
+
+```bash
+# Theme
+GTK_THEME="Orchis-Dark"
+ICON_THEME="Tela-circle-dark"
+CURSOR_THEME="Bibata-Modern-Ice"
+
+# Fonts
+FONT_NAME="Inter"
+MONOSPACE_FONT="JetBrainsMono Nerd Font"
+
+# Dock favorites (detected automatically — only existing apps are added)
+FAVORITES="brave,firefox,code,terminal,files,settings"
+```
+
+The installer automatically detects your browser (Brave → Firefox → Chrome → Chromium), code editor (VS Code / Code OSS), and monospace font family. If `config/default.conf` is missing, built-in defaults are used.
+
 ## Wallpapers
 
 You can easily add your own wallpapers to the installation process. Simply place your `.jpg`, `.png`, or `.webp` files in the `assets/wallpapers/` directory before running the installer. You will be prompted to select your preferred wallpaper during installation.
@@ -60,7 +83,7 @@ You can easily add your own wallpapers to the installation process. Simply place
 ## FAQ & Troubleshooting
 
 **Q: The installer failed to configure GNOME extensions.**
-A: Automating GNOME extension installation can sometimes be brittle due to updates on extensions.gnome.org. If this happens, the script will tell you which ones failed. You can install them manually via [extensions.gnome.org](https://extensions.gnome.org) or using the Extension Manager app.
+A: Automating GNOME extension installation can sometimes be brittle due to updates on extensions.gnome.org. If this happens, the installer will display a detailed recovery guide listing the extensions that need manual installation. The easiest way is to open **Extension Manager** (installed automatically as a dependency) and search for the listed extensions. Alternatively, visit [extensions.gnome.org](https://extensions.gnome.org).
 
 **Q: My terminal looks weird after installing the fonts.**
 A: Ensure your terminal emulator is configured to use the newly installed `JetBrainsMono Nerd Font`.

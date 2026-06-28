@@ -11,18 +11,30 @@ apply_gnome_settings() {
 
     # ── Appearance ──────────────────────────────────────────────────────────
     info "Setting dark mode..."
-    safe_gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-    safe_gsettings set org.gnome.desktop.interface gtk-theme 'Orchis-Dark'
-    safe_gsettings set org.gnome.desktop.interface icon-theme 'Tela-circle-dark'
-    safe_gsettings set org.gnome.desktop.interface cursor-theme 'Bibata-Modern-Ice'
-    safe_gsettings set org.gnome.desktop.interface cursor-size 24
+    safe_gsettings set org.gnome.desktop.interface color-scheme "${COLOR_SCHEME}"
+    safe_gsettings set org.gnome.desktop.interface gtk-theme "${GTK_THEME}"
+    safe_gsettings set org.gnome.desktop.interface icon-theme "${ICON_THEME}"
+    safe_gsettings set org.gnome.desktop.interface cursor-theme "${CURSOR_THEME}"
+    safe_gsettings set org.gnome.desktop.interface cursor-size "${CURSOR_SIZE}"
 
     # ── Fonts ───────────────────────────────────────────────────────────────
     info "Setting fonts..."
-    safe_gsettings set org.gnome.desktop.interface font-name 'Inter Regular 11'
-    safe_gsettings set org.gnome.desktop.interface document-font-name 'Inter Regular 11'
-    safe_gsettings set org.gnome.desktop.interface monospace-font-name 'JetBrainsMono Nerd Font 13'
-    safe_gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Inter Bold 11'
+    safe_gsettings set org.gnome.desktop.interface font-name "${FONT_NAME} ${FONT_STYLE} ${FONT_SIZE}"
+    safe_gsettings set org.gnome.desktop.interface document-font-name "${FONT_NAME} ${FONT_STYLE} ${FONT_SIZE}"
+    safe_gsettings set org.gnome.desktop.wm.preferences titlebar-font "${FONT_NAME} ${TITLEBAR_FONT_STYLE} ${FONT_SIZE}"
+
+    # ── Monospace Font (detect via fc-list) ──────────────────────────────────
+    local detected_mono=""
+    detected_mono=$(detect_nerd_font) || true
+
+    if [[ -n "$detected_mono" ]]; then
+        info "Detected monospace font: ${detected_mono}"
+        safe_gsettings set org.gnome.desktop.interface monospace-font-name "${detected_mono} ${MONOSPACE_FONT_SIZE}"
+    else
+        warn "JetBrainsMono Nerd Font not detected via fc-list"
+        warn "Trying configured value: ${MONOSPACE_FONT} ${MONOSPACE_FONT_SIZE}"
+        safe_gsettings set org.gnome.desktop.interface monospace-font-name "${MONOSPACE_FONT} ${MONOSPACE_FONT_SIZE}"
+    fi
 
     # ── Font rendering ──────────────────────────────────────────────────────
     safe_gsettings set org.gnome.desktop.interface font-antialiasing 'rgba'
@@ -30,7 +42,7 @@ apply_gnome_settings() {
 
     # ── Window management ───────────────────────────────────────────────────
     info "Configuring window behavior..."
-    safe_gsettings set org.gnome.desktop.wm.preferences button-layout 'close,minimize,maximize:'
+    safe_gsettings set org.gnome.desktop.wm.preferences button-layout "${BUTTON_LAYOUT}"
     safe_gsettings set org.gnome.mutter center-new-windows true
     safe_gsettings set org.gnome.mutter edge-tiling true
 
@@ -39,7 +51,7 @@ apply_gnome_settings() {
     safe_gsettings set org.gnome.desktop.interface clock-show-weekday true
     safe_gsettings set org.gnome.desktop.interface clock-show-date true
     safe_gsettings set org.gnome.desktop.interface clock-show-seconds false
-    safe_gsettings set org.gnome.desktop.interface clock-format '24h'
+    safe_gsettings set org.gnome.desktop.interface clock-format "${CLOCK_FORMAT}"
 
     # ── Workspaces ──────────────────────────────────────────────────────────
     info "Configuring workspaces..."
@@ -50,9 +62,16 @@ apply_gnome_settings() {
     safe_gsettings set org.gnome.desktop.interface enable-animations true
 
     # ── Favorite apps in dock ───────────────────────────────────────────────
-    info "Setting favorite apps..."
-    safe_gsettings set org.gnome.shell favorite-apps \
-        "['org.gnome.Nautilus.desktop', 'firefox_firefox.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.Settings.desktop', 'org.gnome.TextEditor.desktop']"
+    info "Detecting and setting favorite apps..."
+    local favorites_array
+    favorites_array=$(build_favorites)
+
+    if [[ "$favorites_array" == "[]" ]]; then
+        warn "No favorite apps detected — skipping dock favorites"
+    else
+        info "Setting dock favorites: ${favorites_array}"
+        safe_gsettings set org.gnome.shell favorite-apps "$favorites_array"
+    fi
 
     # ── Night Light ─────────────────────────────────────────────────────────
     safe_gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
@@ -108,6 +127,20 @@ apply_gnome_settings() {
         safe_gsettings set org.gnome.shell.extensions.just-perfection notification-banner-position 2
     else
         warn "Just Perfection schema not found — skipping configuration"
+    fi
+
+    # ── Theme Verification ──────────────────────────────────────────────────
+    info "Verifying theme application..."
+    local applied_theme
+    applied_theme=$(gsettings get org.gnome.desktop.interface gtk-theme 2>/dev/null | tr -d "'" || true)
+
+    if [[ "$applied_theme" == "${GTK_THEME}" ]]; then
+        success "Theme applied successfully: ${GTK_THEME}"
+        INSTALL_STATUS[theme_applied]="installed"
+    else
+        warn "Theme installed but could not be activated automatically"
+        warn "Expected: ${GTK_THEME}, Got: ${applied_theme:-unknown}"
+        INSTALL_STATUS[theme_applied]="failed"
     fi
 
     success "GNOME configuration applied"
