@@ -207,6 +207,13 @@ reset_gnome_settings() {
     safe_gsettings reset org.gnome.settings-daemon.plugins.color night-light-enabled
     safe_gsettings reset org.gnome.settings-daemon.plugins.color night-light-temperature
 
+    # Reset wallpaper
+    safe_gsettings reset org.gnome.desktop.background picture-uri
+    safe_gsettings reset org.gnome.desktop.background picture-uri-dark
+    safe_gsettings reset org.gnome.desktop.background picture-options
+    safe_gsettings reset org.gnome.desktop.screensaver picture-uri
+    safe_gsettings reset org.gnome.desktop.screensaver picture-options
+
     # Reset extension schemas
     info "Resetting extension configurations..."
     safe_gsettings reset-recursively org.gnome.shell.extensions.blur-my-shell 2>/dev/null || true

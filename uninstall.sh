@@ -55,12 +55,12 @@ main() {
     fi
 
     # Run uninstallation steps
+    reset_gnome_settings
     remove_theme
     remove_icons
     remove_cursor
     remove_fonts
     remove_extensions
-    reset_gnome_settings
 
     printf "\n"
     printf "${BOLD}${GREEN}  ========================================${RESET}\n"
