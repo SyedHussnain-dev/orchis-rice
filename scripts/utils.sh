@@ -149,7 +149,7 @@ safe_gsettings() {
 
     if ! gsettings "$action" "$@" 2>/dev/null; then
         warn "gsettings: could not $action $*"
-        return 1
+        return 0
     fi
 }
 
