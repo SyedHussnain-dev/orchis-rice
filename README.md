@@ -49,6 +49,14 @@ chmod +x install.sh uninstall.sh scripts/*.sh
 ./install.sh
 ```
 
+## Uninstallation
+
+To undo the changes and revert to your previous setup, run the uninstaller script. This will remove themes, icons, cursors, fonts, and reset GNOME settings:
+
+```bash
+./uninstall.sh
+```
+
 ## Preview
 
 ![Installer Preview](assets/screenshots/installer-preview.png)
