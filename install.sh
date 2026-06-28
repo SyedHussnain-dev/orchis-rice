@@ -172,49 +172,95 @@ configure_theme() {
     printf "${CYAN}             Configure Orchis Theme Options${RESET}\n"
     printf "${BOLD}${MAGENTA}  ======================================================${RESET}\n"
     printf "\n"
-    
+
     # Ensure config is loaded first to show current defaults
     load_config >/dev/null 2>&1
 
-    printf "  ${BOLD}Theme Variant (default, purple, pink, red, orange, yellow, green, teal, grey, all)${RESET}\n"
-    printf "  Current [${ORCHIS_THEME_VARIANT:-default}]: "
+    # ── Theme Variant ───────────────────────────────────────────────────────
+    printf "  ${BOLD}Theme Variant${RESET}\n"
+    printf "  ${DIM}Options: default, purple, pink, red, orange, yellow, green, teal, grey, all${RESET}\n"
+    printf "  Current [${CYAN}${ORCHIS_THEME_VARIANT:-default}${RESET}]: "
     read -r t_var
     [[ -n "$t_var" ]] && ORCHIS_THEME_VARIANT="$t_var"
-    
-    printf "\n  ${BOLD}Color Variant (standard, light, dark)${RESET}\n"
-    printf "  Current [${ORCHIS_COLOR_VARIANT:-dark}]: "
+
+    # ── Color Variant ───────────────────────────────────────────────────────
+    printf "\n  ${BOLD}Color Variant${RESET}\n"
+    printf "  ${DIM}Options: standard, light, dark  (Default: All variants)${RESET}\n"
+    printf "  Current [${CYAN}${ORCHIS_COLOR_VARIANT:-dark}${RESET}]: "
     read -r c_var
     [[ -n "$c_var" ]] && ORCHIS_COLOR_VARIANT="$c_var"
 
-    printf "\n  ${BOLD}Size Variant (standard, compact)${RESET}\n"
-    printf "  Current [${ORCHIS_SIZE_VARIANT:-}]: "
+    # ── Size Variant ────────────────────────────────────────────────────────
+    printf "\n  ${BOLD}Size Variant${RESET}\n"
+    printf "  ${DIM}Options: standard, compact  (Default: All variants)${RESET}\n"
+    printf "  Current [${CYAN}${ORCHIS_SIZE_VARIANT:-all}${RESET}]: "
     read -r s_var
     [[ -n "$s_var" ]] && ORCHIS_SIZE_VARIANT="$s_var"
 
-    printf "\n  ${BOLD}Tweaks (macos, solid, compact, black, primary, submenu, dock)${RESET}\n"
-    printf "  Current [${ORCHIS_TWEAKS:-macos}]: "
+    # ── Icon Variant ────────────────────────────────────────────────────────
+    printf "\n  ${BOLD}Shell Panel Activities Icon${RESET}\n"
+    printf "  ${DIM}Options: default, apple, simple, gnome, ubuntu, arch, manjaro, fedora,${RESET}\n"
+    printf "  ${DIM}         debian, void, opensuse, popos, mxlinux, zorin, endeavouros,${RESET}\n"
+    printf "  ${DIM}         tux, nixos, gentoo, budgie, solus, kali  (Default: ChromeOS style)${RESET}\n"
+    printf "  Current [${CYAN}${ORCHIS_ICON_VARIANT:-chromeos}${RESET}]: "
+    read -r i_var
+    [[ -n "$i_var" ]] && ORCHIS_ICON_VARIANT="$i_var"
+
+    # ── Tweaks ──────────────────────────────────────────────────────────────
+    printf "\n  ${BOLD}Tweaks${RESET} ${DIM}(space-separated, options can mix)${RESET}\n"
+    printf "  ${DIM}  solid     — No transparency panel variant${RESET}\n"
+    printf "  ${DIM}  compact   — No floating panel variant${RESET}\n"
+    printf "  ${DIM}  black     — Full black variant${RESET}\n"
+    printf "  ${DIM}  primary   — Radio icon checked color → primary theme color${RESET}\n"
+    printf "  ${DIM}  macos     — macOS-style window buttons${RESET}\n"
+    printf "  ${DIM}  submenu   — Normal submenus color contrast${RESET}\n"
+    printf "  ${DIM}  nord      — Nord colorscheme${RESET}\n"
+    printf "  ${DIM}  dracula   — Dracula colorscheme  (nord and dracula cannot mix!)${RESET}\n"
+    printf "  ${DIM}  dock      — Fix style for dash-to-dock / ubuntu-dock${RESET}\n"
+    printf "  Current [${CYAN}${ORCHIS_TWEAKS:-macos}${RESET}]: "
     read -r tw_var
     [[ -n "$tw_var" ]] && ORCHIS_TWEAKS="$tw_var"
 
-    printf "\n  ${BOLD}Round Corners (e.g. 5px, 8px, 12px)${RESET}\n"
-    printf "  Current [${ORCHIS_ROUND:-}]: "
+    # ── Round Corners ───────────────────────────────────────────────────────
+    printf "\n  ${BOLD}Round Corner Radius${RESET}\n"
+    printf "  ${DIM}Enter a px value (suggested: 2px < value < 16px, e.g. 5px, 8px, 12px)${RESET}\n"
+    printf "  Current [${CYAN}${ORCHIS_ROUND:-auto}${RESET}]: "
     read -r r_var
     [[ -n "$r_var" ]] && ORCHIS_ROUND="$r_var"
 
-    printf "\n  ${BOLD}Link to libadwaita apps (true/false)${RESET}\n"
-    printf "  Current [${ORCHIS_LIBADWAITA:-false}]: "
+    # ── Libadwaita ──────────────────────────────────────────────────────────
+    printf "\n  ${BOLD}Link to libadwaita apps${RESET}\n"
+    printf "  ${DIM}Links installed Orchis gtk-4.0 theme to config folder for libadwaita apps${RESET}\n"
+    printf "  Current [${CYAN}${ORCHIS_LIBADWAITA:-false}${RESET}]: "
     read -r l_var
     [[ -n "$l_var" ]] && ORCHIS_LIBADWAITA="$l_var"
-    
-    # Save back to config/default.conf using sed
+
+    # ── Fixed Accent ────────────────────────────────────────────────────────
+    printf "\n  ${BOLD}Fixed accent (blue) color for GNOME Shell >= 47${RESET}\n"
+    printf "  ${DIM}Options: true, false${RESET}\n"
+    printf "  Current [${CYAN}${ORCHIS_FIXED:-false}${RESET}]: "
+    read -r f_var
+    [[ -n "$f_var" ]] && ORCHIS_FIXED="$f_var"
+
+    # ── Shell Version ───────────────────────────────────────────────────────
+    printf "\n  ${BOLD}GNOME Shell Version Override${RESET}\n"
+    printf "  ${DIM}Options: 38, 40, 42, 44, 46, 47, 48  (leave empty to auto-detect)${RESET}\n"
+    printf "  Current [${CYAN}${ORCHIS_SHELL_VERSION:-auto-detect}${RESET}]: "
+    read -r sh_var
+    [[ -n "$sh_var" ]] && ORCHIS_SHELL_VERSION="$sh_var"
+
+    # ── Save to config ──────────────────────────────────────────────────────
     if [[ -f "$CONFIG_FILE" ]]; then
         sed -i "s/^ORCHIS_THEME_VARIANT=.*/ORCHIS_THEME_VARIANT=\"$ORCHIS_THEME_VARIANT\"/" "$CONFIG_FILE"
         sed -i "s/^ORCHIS_COLOR_VARIANT=.*/ORCHIS_COLOR_VARIANT=\"$ORCHIS_COLOR_VARIANT\"/" "$CONFIG_FILE"
         sed -i "s/^ORCHIS_SIZE_VARIANT=.*/ORCHIS_SIZE_VARIANT=\"$ORCHIS_SIZE_VARIANT\"/" "$CONFIG_FILE"
+        sed -i "s/^ORCHIS_ICON_VARIANT=.*/ORCHIS_ICON_VARIANT=\"$ORCHIS_ICON_VARIANT\"/" "$CONFIG_FILE"
         sed -i "s/^ORCHIS_TWEAKS=.*/ORCHIS_TWEAKS=\"$ORCHIS_TWEAKS\"/" "$CONFIG_FILE"
         sed -i "s/^ORCHIS_ROUND=.*/ORCHIS_ROUND=\"$ORCHIS_ROUND\"/" "$CONFIG_FILE"
         sed -i "s/^ORCHIS_LIBADWAITA=.*/ORCHIS_LIBADWAITA=\"$ORCHIS_LIBADWAITA\"/" "$CONFIG_FILE"
-        
+        sed -i "s/^ORCHIS_FIXED=.*/ORCHIS_FIXED=\"$ORCHIS_FIXED\"/" "$CONFIG_FILE"
+        sed -i "s/^ORCHIS_SHELL_VERSION=.*/ORCHIS_SHELL_VERSION=\"$ORCHIS_SHELL_VERSION\"/" "$CONFIG_FILE"
+
         printf "\n  ${GREEN}✓ Configuration saved to ${CONFIG_FILE}${RESET}\n"
     else
         printf "\n  ${RED}✗ Config file not found at ${CONFIG_FILE}${RESET}\n"
@@ -228,7 +274,7 @@ configure_theme() {
 
 
 # ── Main Menu ───────────────────────────────────────────────────────────────
-main() {
+show_menu() {
     clear || true
     printf "\n"
     printf "${BOLD}${MAGENTA}  ======================================================${RESET}\n"
@@ -245,6 +291,10 @@ main() {
     printf "\n"
     printf "${BOLD}${MAGENTA}  ======================================================${RESET}\n"
     printf "\n"
+}
+
+main() {
+    show_menu
 
     while true; do
         printf "  ${BOLD}Select an option [1-6]:${RESET} "
@@ -269,9 +319,11 @@ main() {
                 ;;
             4)
                 backup_settings
+                show_menu
                 ;;
             5)
                 configure_theme
+                show_menu
                 ;;
             6)
                 info "Exiting."

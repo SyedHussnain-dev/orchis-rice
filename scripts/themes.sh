@@ -52,8 +52,9 @@ install_theme() {
         install_args+=("-i" "$ORCHIS_ICON_VARIANT")
     fi
     if [[ -n "${ORCHIS_TWEAKS:-}" ]]; then
+        install_args+=("--tweaks")
         for tweak in $ORCHIS_TWEAKS; do
-            install_args+=("--tweaks" "$tweak")
+            install_args+=("$tweak")
         done
     fi
     if [[ -n "${ORCHIS_ROUND:-}" ]]; then
